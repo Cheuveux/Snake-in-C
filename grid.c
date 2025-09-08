@@ -60,8 +60,10 @@ void    print_grid (char grid[20][20])
                 {
                     if (k == 0)
                         c = 'O';    //tete
-                    else
+                    else if ( k >= 2 && k == snake_length - 1)
                         c = '$';
+                    else
+                        c = 'o'; //corps
                     break;
                 }
                 k++;

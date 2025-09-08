@@ -51,6 +51,7 @@ int main() {
 
         if (check_eat_food(snake[0].i, snake[0].j, &food)) {
             snake_length++;
+            grid[snake[0].i] [snake[0].j] = ' ';
             spawn_food(&food, grid);
         }
 
