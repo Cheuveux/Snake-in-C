@@ -1,6 +1,8 @@
-#include<unistd.h> //pour fonction write
-#include<stdio.h> //pour scnaf, permet de recuperer les inputs claviers de la fonction move
-#include "grid.h" //structure concernant la grille et le serpent
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "grid.h"
+#include "food.h"
 
 
 Segment snake[100];
@@ -28,7 +30,7 @@ void    clear_screen()
 {
     write(1,"\033[2J\033[H", 7);
 }
-void    print_grid (char grid[20][20])
+void    print_grid ()
 {
     int i;
     int j;
@@ -47,7 +49,7 @@ void    print_grid (char grid[20][20])
                 c = '.';
                 
             }
-            else if (grid[i][j] == '*')
+            else if (i == '*' || j == '*')
             {
                 c = '*';
             }
@@ -118,28 +120,66 @@ void    move_snake(char move, int *game_over)
     }
 }
 
-/*int main()
-{
-    char move;
-    int game_over = 0;
 
-    // Position initiale du serpent au centre
+void spawn_food(Food *food, char grid[20][20]) {
+    int i;
+    int j;
+    int found;
+
+    found = 0;
+    while(found == 0)
+    {
+        i = rand() % 18 + 1; // entre 1 et 18
+        j = rand() % 18 + 1; 
+        if (grid[i][j] == ' ') // éviter murs/serpent
+            found = 1;
+    }
+    food->i = i;
+    food->j = j;
+    grid[i][j] = '*';
+}
+
+int check_eat_food(int head_i, int head_j, Food *food) {
+    return (head_i == food->i && head_j == food->j);
+}
+
+
+int main() {
+    char grid[20][20];
+    Food food;
+    int game_over = 0;
+    char move;
+
+    srand(time(NULL));
+
+    // Initialisation
     snake[0].i = 10;
     snake[0].j = 10;
     snake_length = 1;
 
-    clear_screen();
-    print_grid();
+    spawn_food(&food, grid);
 
-    while (!game_over)
-    {
+        clear_screen();
+        print_grid();
+
+    // Boucle principale du jeu
+    while (!game_over) {
+      
+
         printf("Déplace le serpent (z=haut, s=bas, q=gauche, d=droite) : ");
         scanf(" %c", &move);
 
         move_snake(move, &game_over);
+
+        if (check_eat_food(snake[0].i, snake[0].j, &food)) {
+            snake_length++;
+            spawn_food(&food, grid);
+        }
+
         clear_screen();
         print_grid();
     }
 
+    printf("Game Over! Score = %d\n", snake_length - 1);
     return 0;
-}*/
+}
